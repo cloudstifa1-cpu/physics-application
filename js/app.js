@@ -4,7 +4,7 @@ const eqInput = $('eq'), statusEl = $('status'), overlay = $('overlay');
 const sceneCanvas = $('scene'), graphCanvas = $('graph'), graphStrip = $('graphStrip');
 const keypad = $('keypad'), modeBtn = $('modeBtn');
 
-const SCENES = { snell: SnellScene };
+const SCENES = { snell: SnellScene, lens: OpticsScene('lens'), mirror: OpticsScene('mirror') };
 let scene = null, playing = true, time = 0, lastFrame = performance.now();
 
 // ---------- canvas sizing (sharp on retina / iPad) ----------

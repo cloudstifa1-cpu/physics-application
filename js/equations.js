@@ -4,9 +4,9 @@
 const LIBRARY = [
   { id: 'snell',    name: "Snell's law",         topic: 'Optics', form: 'n1 sin θ1 = n2 sin θ2', need: ['n1', 'n2', 'sin', 'theta1'], scene: 'snell' },
   { id: 'critical', name: 'Critical angle',      topic: 'Optics', form: 'sin θc = n2 / n1',      need: ['sin', 'thetac', 'n1', 'n2'], scene: 'snell' },
-  { id: 'thinlens', name: 'Thin lens equation',  topic: 'Optics', form: '1/f = 1/do + 1/di',     need: ['f', 'do', 'di'] },
-  { id: 'magnify',  name: 'Magnification',       topic: 'Optics', form: 'm = -di / do',          need: ['m', 'di', 'do'] },
-  { id: 'mirror',   name: 'Mirror focal length', topic: 'Optics', form: 'f = R / 2',             need: ['f', 'R'] },
+  { id: 'thinlens', name: 'Thin lens equation',  topic: 'Optics', form: '1/f = 1/do + 1/di',     need: ['f', 'do', 'di'], scene: 'lens' },
+  { id: 'magnify',  name: 'Magnification',       topic: 'Optics', form: 'm = -di / do',          need: ['m', 'di', 'do'], scene: 'lens' },
+  { id: 'mirror',   name: 'Mirror focal length', topic: 'Optics', form: 'f = R / 2',             need: ['f', 'R'], scene: 'mirror' },
   { id: 'idealgas', name: 'Ideal gas law',       topic: 'Thermo', form: 'PV = nRT',              need: ['P', 'V', 'n', 'R', 'T'] },
   { id: 'firstlaw', name: 'First law of thermodynamics', topic: 'Thermo', form: 'ΔU = Q − W',    need: ['deltaU', 'Q', 'W'] },
   { id: 'heat',     name: 'Specific heat',       topic: 'Thermo', form: 'Q = mcΔT',              need: ['Q', 'm', 'c', 'deltaT'] },
