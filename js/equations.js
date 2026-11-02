@@ -7,9 +7,9 @@ const LIBRARY = [
   { id: 'thinlens', name: 'Thin lens equation',  topic: 'Optics', form: '1/f = 1/do + 1/di',     need: ['f', 'do', 'di'], scene: 'lens' },
   { id: 'magnify',  name: 'Magnification',       topic: 'Optics', form: 'm = -di / do',          need: ['m', 'di', 'do'], scene: 'lens' },
   { id: 'mirror',   name: 'Mirror focal length', topic: 'Optics', form: 'f = R / 2',             need: ['f', 'R'], scene: 'mirror' },
-  { id: 'idealgas', name: 'Ideal gas law',       topic: 'Thermo', form: 'PV = nRT',              need: ['P', 'V', 'n', 'R', 'T'] },
-  { id: 'firstlaw', name: 'First law of thermodynamics', topic: 'Thermo', form: 'ΔU = Q − W',    need: ['deltaU', 'Q', 'W'] },
-  { id: 'heat',     name: 'Specific heat',       topic: 'Thermo', form: 'Q = mcΔT',              need: ['Q', 'm', 'c', 'deltaT'] },
+  { id: 'idealgas', name: 'Ideal gas law',       topic: 'Thermo', form: 'PV = nRT',              need: ['P', 'V', 'n', 'R', 'T'], scene: 'gas' },
+  { id: 'firstlaw', name: 'First law of thermodynamics', topic: 'Thermo', form: 'ΔU = Q − W',    need: ['deltaU', 'Q', 'W'], scene: 'firstlaw' },
+  { id: 'heat',     name: 'Specific heat',       topic: 'Thermo', form: 'Q = mcΔT',              need: ['Q', 'm', 'c', 'deltaT'], scene: 'heat' },
 ];
 
 // Turn typed math into plain ASCII the matcher and parser understand.

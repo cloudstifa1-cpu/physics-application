@@ -4,7 +4,8 @@ const eqInput = $('eq'), statusEl = $('status'), overlay = $('overlay');
 const sceneCanvas = $('scene'), graphCanvas = $('graph'), graphStrip = $('graphStrip');
 const keypad = $('keypad'), modeBtn = $('modeBtn');
 
-const SCENES = { snell: SnellScene, lens: OpticsScene('lens'), mirror: OpticsScene('mirror') };
+const SCENES = { snell: SnellScene, lens: OpticsScene('lens'), mirror: OpticsScene('mirror'),
+  gas: GasScene, firstlaw: FirstLawScene, heat: HeatScene };
 let scene = null, playing = true, time = 0, lastFrame = performance.now();
 
 // ---------- canvas sizing (sharp on retina / iPad) ----------
@@ -21,6 +22,7 @@ function fit(canvas) {
 // ---------- scenes ----------
 function loadScene(s) {
   scene = s;
+  time = 0; scene._t = undefined; // restart animations from the beginning
   scene.params = {};
   scene.sliders.forEach(d => scene.params[d.key] = d.value);
   $('sceneTitle').textContent = scene.title;
@@ -39,7 +41,7 @@ function buildSliders() {
     wrap.innerHTML = `<label><span>${d.label}</span><output></output></label>
       <input type="range" min="${d.min}" max="${d.max}" step="${d.step}" value="${scene.params[d.key]}" aria-label="${d.label}">`;
     const out = wrap.querySelector('output'), range = wrap.querySelector('input');
-    const show = () => out.textContent = Number(scene.params[d.key]).toFixed(d.digits ?? 2) + (d.unit || '');
+    const show = () => out.textContent = d.names ? d.names[scene.params[d.key]] : Number(scene.params[d.key]).toFixed(d.digits ?? 2) + (d.unit || '');
     range.addEventListener('input', () => { scene.params[d.key] = parseFloat(range.value); show(); updateReadouts(); });
     show();
     box.appendChild(wrap);

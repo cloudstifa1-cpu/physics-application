@@ -20,6 +20,10 @@ Open `index.html` through any static web server (no build step).
 - Readouts: image distance, magnification, image height, real/virtual, upright/inverted, enlarged/reduced
 - Graph strip: image distance vs object distance
 
+## Phase 3 (done)
+- Ideal gas (PV = nRT): particles bouncing in a piston cylinder; speed follows temperature, count follows moles, piston follows volume; pressure gauge; P–V isotherm graph
+- First law (ΔU = Q − W): heat arrows in/out, work arrow on the piston, energy bars, temperature and volume change played as a process
+- Specific heat (Q = mcΔT): block or beaker heated on a burner, animated thermometer, 5 materials, warning when water would boil; T vs Q graph comparing materials
+
 ## Next phases
-- Thermo: ideal gas (particles in a piston), first law, specific heat
 - Installable offline web app (PWA), then phone layout
