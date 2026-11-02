@@ -149,6 +149,33 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+// ---------- install + offline ----------
+// The offline cache (sw.js) only exists in the release build (dist/).
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+const installBtn = $('installBtn');
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let installEvent = null;
+
+window.addEventListener('beforeinstallprompt', e => { // Chrome / Edge on laptops and Android
+  e.preventDefault(); installEvent = e; installBtn.hidden = false;
+});
+window.addEventListener('appinstalled', () => { installBtn.hidden = true; });
+if (isIOS && !standalone) installBtn.hidden = false; // Safari has no install prompt; show how instead
+
+installBtn.addEventListener('click', async () => {
+  if (installEvent) {
+    installEvent.prompt();
+    await installEvent.userChoice;
+    installEvent = null; installBtn.hidden = true;
+  } else if (isIOS) {
+    overlay.innerHTML = 'To install on iPad: tap the Share button <b>⬆</b> in Safari, then <b>Add to Home Screen</b>.<br><br><button type="button" id="closeTip">Got it</button>';
+    overlay.hidden = false;
+    $('closeTip').onclick = () => { overlay.hidden = true; };
+  }
+});
+
 setMode(mathMode);
 if (!touch) eqInput.blur();
 run();

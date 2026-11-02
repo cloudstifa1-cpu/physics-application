@@ -25,5 +25,10 @@ Open `index.html` through any static web server (no build step).
 - First law (ΔU = Q − W): heat arrows in/out, work arrow on the piston, energy bars, temperature and volume change played as a process
 - Specific heat (Q = mcΔT): block or beaker heated on a burner, animated thermometer, 5 materials, warning when water would boil; T vs Q graph comparing materials
 
+## Phase 4 (done): installable + offline
+- App manifest, icons, Install button (Chrome/Edge prompt; iPad shows Add to Home Screen steps)
+- `npm install && npm run build` makes `dist/`: all code in one minified, name-scrambled file plus an offline cache
+- Host `dist/` on any HTTPS host (Netlify, Cloudflare); after the first visit it works with no internet
+
 ## Next phases
-- Installable offline web app (PWA), then phone layout
+- More equations, then phone layout
