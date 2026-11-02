@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Physics Visualizer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Physics Visualizer</div>
+  <form id="eqForm" class="eq-wrap" autocomplete="off">
+    <input id="eq" type="text" spellcheck="false" aria-label="Equation" value="n1 sin θ1 = n2 sin θ2">
+    <button type="button" id="modeBtn" class="mode">∑ Math pad</button>
+    <button type="submit" class="primary">Show</button>
+  </form>
+</header>
+<div id="status" class="status" role="status"></div>
+
+<main class="stage">
+  <section class="view">
+    <canvas id="scene"></canvas>
+    <div id="overlay" class="overlay" hidden></div>
+  </section>
+  <aside class="panel">
+    <h2 id="sceneTitle"></h2>
+    <div id="sliders"></div>
+    <div id="readouts" class="readouts"></div>
+    <div class="controls">
+      <button type="button" id="playBtn">⏸ Pause</button>
+      <button type="button" id="resetBtn">↺ Reset</button>
+    </div>
+    <h3>Equation library</h3>
+    <div id="library" class="library"></div>
+  </aside>
+</main>
+
+<section id="graphStrip" class="graph">
+  <button type="button" id="graphToggle" class="graph-toggle">▾ Graph</button>
+  <canvas id="graph"></canvas>
+</section>
+
+<div id="keypad" class="keypad" hidden></div>
+
+<script src="js/equations.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/scenes/snell.js"></script>
+<script src="js/scenes/graph.js"></script>
+<script src="js/keypad.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
