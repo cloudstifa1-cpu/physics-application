@@ -1,0 +1,6 @@
+{
+  // Cloudflare settings: publish only the scrambled release build in dist/
+  "name": "physics-visualizer",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./dist" }
+}
