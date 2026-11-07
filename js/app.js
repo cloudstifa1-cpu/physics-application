@@ -24,12 +24,14 @@ function fit(canvas) {
 function loadScene(s) {
   scene = s;
   time = 0; scene._t = undefined; // restart animations from the beginning
-  scene.params = {};
-  scene.sliders.forEach(d => scene.params[d.key] = d.value);
+  if (!scene.mount) { // the workbench keeps its own letters and values
+    scene.params = {};
+    scene.sliders.forEach(d => scene.params[d.key] = d.value);
+  }
   $('sceneTitle').textContent = scene.title;
   graphStrip.hidden = !scene.graph;
   overlay.hidden = true;
-  buildSliders();
+  scene.mount ? scene.mount($('sliders')) : buildSliders();
   updateReadouts();
 }
 
@@ -107,6 +109,7 @@ function showHome() {
   scene = null; currentTopic = null;
   homeEl.hidden = false; stageEl.hidden = true; graphStrip.hidden = true; aspectsNav.hidden = true;
   overlay.hidden = true; hidePad();
+  document.body.classList.remove('wb');
   statusEl.innerHTML = 'Pick a topic below, or type an equation above.';
   window.scrollTo(0, 0);
 }
@@ -122,6 +125,15 @@ function enterStage(topic, aspect) {
       // phones get one drop-down menu instead of a pile of buttons
       + `<select class="aspect-select" aria-label="Choose what to show">${byName(topic.aspects).map(a =>
         `<option value="${escapeHtml(a.name)}"${a === aspect ? ' selected' : ''}>${a.name}</option>`).join('')}</select>` : '');
+  if (topic && !topic.aspects.length) aspectsNav.querySelector('select').remove();
+  document.body.classList.toggle('wb', !!(topic && topic.wb));
+}
+
+const WB_TOPIC = { name: 'Workbench', aspects: [], wb: true };
+function openWorkbench() {
+  enterStage(WB_TOPIC, null);
+  loadScene(Workbench);
+  statusEl.innerHTML = '<span class="ok">Workbench</span> · Write equations below. Every letter gets a slider. Drag on the graph to read values.';
 }
 aspectsNav.addEventListener('change', e => {
   const a = currentTopic && currentTopic.aspects.find(x => x.name === e.target.value);
@@ -145,6 +157,13 @@ aspectsNav.addEventListener('click', e => {
 });
 document.querySelector('.brand').addEventListener('click', showHome);
 
+{ // Workbench card comes first
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'topic wb-card';
+  b.innerHTML = '<b>Workbench</b><span>Write your own equations. Every letter gets a slider, and the graph changes live as you work.</span><span class="count">Open →</span>';
+  b.addEventListener('click', openWorkbench);
+  $('topics').appendChild(b);
+}
 byName(TOPICS).forEach(t => {
   const b = document.createElement('button');
   b.type = 'button'; b.className = 'topic';
@@ -158,13 +177,17 @@ byName(TOPICS).forEach(t => {
 const touch = matchMedia('(pointer: coarse)').matches;
 let mathMode = touch; // tablets start on the math pad, laptops on the real keyboard
 
+let lastMath = null; // the equation box used last (top bar or a workbench line)
 function setMode(math) {
   mathMode = math;
-  eqInput.inputMode = math ? 'none' : 'text';
-  modeBtn.textContent = math ? '⌨ Keyboard' : '∑ Math pad';
-  modeBtn.classList.toggle('on', math);
-  if (math) { showPad(); eqInput.focus(); } else { hidePad(); eqInput.blur(); eqInput.focus(); }
+  document.querySelectorAll('#eq, input[data-math]').forEach(i => { i.inputMode = math ? 'none' : 'text'; });
+  document.querySelectorAll('.mode').forEach(b => { b.textContent = math ? '⌨ Keyboard' : '∑ Math pad'; b.classList.toggle('on', math); });
+  const box = lastMath && lastMath.isConnected && lastMath.offsetParent ? lastMath : eqInput;
+  if (math) { showPad(); box.focus(); } else { hidePad(); box.blur(); box.focus(); }
 }
+document.addEventListener('focusin', e => {
+  if (e.target.matches && e.target.matches('#eq, input[data-math]')) { lastMath = e.target; if (mathMode) showPad(); }
+});
 function showPad() { keypad.hidden = false; }
 function hidePad() { keypad.hidden = true; }
 

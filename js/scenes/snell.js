@@ -141,6 +141,7 @@ function axes(ctx, w, h, x0, x1, y0, y1, xLabel, yLabel) {
 }
 function fmt(v) {
   const a = Math.abs(v);
+  if (a < 1e-12) return '0'; // rounding noise like 4.4e-16
   if (a !== 0 && (a >= 1e4 || a < 1e-2)) return v.toExponential(1);
   return Number(v.toFixed(a >= 100 ? 0 : 2)).toString();
 }

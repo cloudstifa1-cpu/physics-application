@@ -43,5 +43,13 @@ Open `index.html` through any static web server (no build step).
 - New Relativity aspect: gravity as curved spacetime — a black hole sinks a grid, an object orbits on it, orbit clock vs far-away clock, last stable orbit at 3 rₛ, spiral-in when too close; clock rate vs distance graph
 - Not published: Cloudflare is frozen at the first version on purpose; updates live only in this repo
 
+## Phase 7 (done): Workbench
+- First card on the home screen: write up to 4 of your own equations
+- Every letter gets a slider with ▶ (auto-sweep), ÷10 and ×10 (change its range); choose which letter runs across the bottom
+- Later lines can use earlier results (y1, y2, then s = y1 + y2); lines without a single name on the left plot left − right
+- Live graph, drag on it to read values; mistakes are shown under the line; work is remembered on the device
+- Math pad types into whichever box is active; on phones the graph stays pinned at the top while typing
+- Installable build lives in the public repo physics-app-install (only the scrambled build) at https://cloudstifa1-cpu.github.io/physics-app-install/
+
 ## Next phases
 - More equations, then phone layout

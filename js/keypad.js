@@ -9,7 +9,12 @@ const KEYS = [
 ];
 const INSERT = { sin: 'sin ', cos: 'cos ', tan: 'tan ', '√': '√(', '*': ' · ', '=': ' = ', '+': ' + ', '-': ' − ' };
 
-function buildKeypad(pad, input, onDone) {
+function buildKeypad(pad, defaultInput, onDone) {
+  // types into whichever equation box is active (top bar or a workbench line)
+  const target = () => {
+    const a = document.activeElement;
+    return a && a.matches && a.matches('input[data-math]') ? a : defaultInput;
+  };
   KEYS.flat().forEach(k => {
     const b = document.createElement('button');
     b.type = 'button'; b.textContent = k;
@@ -20,6 +25,7 @@ function buildKeypad(pad, input, onDone) {
   });
 
   function press(k) {
+    const input = target();
     const s = input.selectionStart ?? input.value.length, e = input.selectionEnd ?? s, v = input.value;
     if (k === 'Done') return onDone();
     if (k === 'Clear') { input.value = ''; return place(0); }
@@ -34,5 +40,5 @@ function buildKeypad(pad, input, onDone) {
     input.value = v.slice(0, s) + txt + v.slice(e);
     place(s + txt.length);
   }
-  function place(pos) { input.focus(); input.setSelectionRange(pos, pos); input.dispatchEvent(new Event('input')); }
+  function place(pos) { const input = target(); input.focus(); input.setSelectionRange(pos, pos); input.dispatchEvent(new Event('input')); }
 }
