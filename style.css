@@ -98,5 +98,6 @@ button.primary { background: var(--accent); color: var(--accent-ink); border-col
   .graph { order: 7; flex: none; height: 160px; }
   .panel > h3, #library { order: 8; }
   #library { margin-bottom: 16px; }
-  .keypad { order: 10; position: sticky; bottom: 0; z-index: 5; }
+  .keypad { order: 10; position: sticky; bottom: 0; z-index: 5; gap: 5px; padding: 6px; }
+  .keypad button { padding: 7px 0; font-size: 17px; }
 }

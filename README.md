@@ -30,5 +30,11 @@ Open `index.html` through any static web server (no build step).
 - `npm install && npm run build` makes `dist/`: all code in one minified, name-scrambled file plus an offline cache
 - Host `dist/` on any HTTPS host (Netlify, Cloudflare); after the first visit it works with no internet
 
+## Phase 5 (done): special relativity
+- Lorentz factor, time dilation, length contraction: a ship with a light clock flies past; its photon zigzags, its clock ticks slower and its length shrinks, compared with the same ship at rest; γ vs v graph
+- Mass–energy (E = mc², E = γmc²): rest energy in joules, TNT and homes powered; kinetic energy bars, relativity vs Newton; KE vs v graph
+- Velocity addition: light, true probe, Newton's guess and the ship race from one launch line; Newton's guess can pass light, the real answer never does
+- Math pad gets a relativity row: γ ₀ ² c v u E m L t
+
 ## Next phases
 - More equations, then phone layout

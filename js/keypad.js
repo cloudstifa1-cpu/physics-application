@@ -4,6 +4,7 @@ const KEYS = [
   ['7', '8', '9', '/', 'sin', 'θ', '(', ')', 'n', 'x'],
   ['4', '5', '6', '*', 'cos', 'π', '^', '√', 'P', 'y'],
   ['1', '2', '3', '-', 'tan', 'Δ', '₁', '₂', 'V', 'T'],
+  ['γ', '₀', '²', 'c', 'v', 'u', 'E', 'm', 'L', 't'],
   ['0', '.', '=', '+', '◀', '▶', '⌫', 'Clear', 'Done'],
 ];
 const INSERT = { sin: 'sin ', cos: 'cos ', tan: 'tan ', '√': '√(', '*': ' · ', '=': ' = ', '+': ' + ', '-': ' − ' };
@@ -12,7 +13,7 @@ function buildKeypad(pad, input, onDone) {
   KEYS.flat().forEach(k => {
     const b = document.createElement('button');
     b.type = 'button'; b.textContent = k;
-    if (/^[a-zθπΔ√^₁₂()]|sin|cos|tan/.test(k) && k.length < 4) b.className = 'fn';
+    if (/^[a-zθπΔ√^₀₁₂²γ()]|sin|cos|tan/.test(k) && k.length < 4) b.className = 'fn';
     if (k === 'Done') b.className = 'wide primary';
     b.addEventListener('pointerdown', e => { e.preventDefault(); press(k); });
     pad.appendChild(b);

@@ -10,13 +10,18 @@ const LIBRARY = [
   { id: 'idealgas', name: 'Ideal gas law',       topic: 'Thermo', form: 'PV = nRT',              need: ['P', 'V', 'n', 'R', 'T'], scene: 'gas' },
   { id: 'firstlaw', name: 'First law of thermodynamics', topic: 'Thermo', form: 'ΔU = Q − W',    need: ['deltaU', 'Q', 'W'], scene: 'firstlaw' },
   { id: 'heat',     name: 'Specific heat',       topic: 'Thermo', form: 'Q = mcΔT',              need: ['Q', 'm', 'c', 'deltaT'], scene: 'heat' },
+  { id: 'lorentz',  name: 'Lorentz factor',      topic: 'Relativity', form: 'γ = 1 / √(1 − v²/c²)', need: ['gamma', 'v', 'c'], scene: 'spacetime' },
+  { id: 'timedil',  name: 'Time dilation',       topic: 'Relativity', form: 'Δt = γΔt₀',          need: ['deltat', 'deltat0'], scene: 'spacetime' },
+  { id: 'lengthc',  name: 'Length contraction',  topic: 'Relativity', form: 'L = L₀ / γ',          need: ['L', 'L0'], scene: 'spacetime' },
+  { id: 'emc2',     name: 'Mass–energy',         topic: 'Relativity', form: 'E = mc²',            need: ['E', 'm', 'c'], scene: 'energy' },
+  { id: 'veladd',   name: 'Velocity addition',   topic: 'Relativity', form: 'w = (u + v) / (1 + uv/c²)', need: ['u', 'v', 'c'], scene: 'veladd' },
 ];
 
 // Turn typed math into plain ASCII the matcher and parser understand.
 function normalize(s) {
   return s
     .replace(/[₀-₉]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x2080 + 48))
-    .replace(/[θϑ]/g, 'theta').replace(/Δ/g, 'delta').replace(/π/g, 'pi')
+    .replace(/[θϑ]/g, 'theta').replace(/γ/g, 'gamma').replace(/['′]/g, '').replace(/Δ/g, 'delta').replace(/π/g, 'pi')
     .replace(/[×·]/g, '*').replace(/[−–]/g, '-').replace(/÷/g, '/')
     .replace(/√/g, 'sqrt').replace(/²/g, '^2').replace(/³/g, '^3');
 }
@@ -33,6 +38,7 @@ function symbols(input) {
     const rest = s.slice(i), low = rest.toLowerCase();
     let m;
     if ((m = rest.match(/^theta(\d+|c(?![a-z]))?/i))) { out.push('theta' + (m[1] || '').toLowerCase()); i += m[0].length; continue; }
+    if (rest.startsWith('gamma')) { out.push('gamma'); i += 5; continue; }
     if ((m = rest.match(/^delta([A-Za-z])(\d*)/))) { out.push('delta' + m[1] + m[2]); i += m[0].length; continue; }
     const f = FUNC_WORDS.find(w => low.startsWith(w));
     if (f) { out.push(f.replace(/^a(sin|cos|tan)$/, 'arc$1')); i += f.length; continue; }

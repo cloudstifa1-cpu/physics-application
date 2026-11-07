@@ -5,7 +5,8 @@ const sceneCanvas = $('scene'), graphCanvas = $('graph'), graphStrip = $('graphS
 const keypad = $('keypad'), modeBtn = $('modeBtn');
 
 const SCENES = { snell: SnellScene, lens: OpticsScene('lens'), mirror: OpticsScene('mirror'),
-  gas: GasScene, firstlaw: FirstLawScene, heat: HeatScene };
+  gas: GasScene, firstlaw: FirstLawScene, heat: HeatScene,
+  spacetime: SpacetimeScene, energy: EnergyScene, veladd: VelAddScene };
 let scene = null, playing = true, time = 0, lastFrame = performance.now();
 
 // ---------- canvas sizing (sharp on retina / iPad) ----------
