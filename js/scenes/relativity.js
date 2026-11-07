@@ -27,9 +27,15 @@ const SpacetimeScene = {
     { key: 't0', label: 'Time passed on ship Δt₀', min: 1, max: 50, step: 1, value: 10, unit: ' yr', digits: 0 },
   ],
   params: {},
+  law: { eq: 'γ = 1/√(1 − v²/c²)', solve: 'gamma', known: ['v', 'c'] },
+  g() { // speeds are fractions of c, so c = 1 here
+    if (!this.lawFn) return gammaOf(this.params.v);
+    const g = solveLaw(this, { v: this.params.v, c: 1 }, -1e4, 1e4);
+    return Number.isFinite(g) && g > 0 ? g : 1;
+  },
 
   readouts() {
-    const { v, L0, t0 } = this.params, g = gammaOf(v);
+    const { v, L0, t0 } = this.params, g = this.g();
     return [
       ['Lorentz factor γ', g.toFixed(3)],
       ['Earth time Δt = γΔt₀', fmt(g * t0) + ' yr'],
@@ -40,7 +46,7 @@ const SpacetimeScene = {
   },
 
   draw(ctx, w, h, t) {
-    const { v, L0 } = this.params, g = gammaOf(v);
+    const { v, L0 } = this.params, g = this.g();
     const rowH = h / 2, H = Math.min(90, rowH * 0.42);
     const T0 = 1.4, cpx = 2 * H / T0, T = g * T0;   // light-clock periods: at rest, moving
     const shipLen = Math.max(70, (L0 / 100) * w * 0.45), Lm = shipLen / g;
@@ -102,9 +108,11 @@ const EnergyScene = {
     { key: 'v', label: 'Speed v', min: 0, max: 0.99, step: 0.01, value: 0.8, unit: ' c', digits: 2 },
   ],
   params: {},
+  law: { eq: 'E = mc²', solve: 'E', known: ['m', 'c'] },
 
   readouts() {
-    const { m, v } = this.params, kg = m / 1000, E0 = kg * C_MS ** 2, g = gammaOf(v);
+    const { m, v } = this.params, kg = m / 1000, g = gammaOf(v);
+    const E0 = this.lawFn ? solveLaw(this, { m: kg, c: C_MS }, -1e30, 1e30) : kg * C_MS ** 2;
     const tnt = E0 / 4.184e9;
     return [
       ['Rest energy E = mc²', E0.toExponential(2) + ' J'],
@@ -157,7 +165,13 @@ const VelAddScene = {
     { key: 'u', label: 'Probe speed u (from ship)', min: 0, max: 0.99, step: 0.01, value: 0.6, unit: ' c', digits: 2 },
   ],
   params: {},
-  res() { const { u, v } = this.params; return (u + v) / (1 + u * v); },
+  law: { eq: 'w = (u + v)/(1 + uv/c²)', solve: 'w', known: ['u', 'v', 'c'] },
+  res() {
+    const { u, v } = this.params;
+    if (!this.lawFn) return (u + v) / (1 + u * v);
+    const w = solveLaw(this, { u, v, c: 1 }, -100, 100);
+    return Number.isFinite(w) ? w : 0;
+  },
 
   readouts() {
     const { u, v } = this.params, r = this.res();

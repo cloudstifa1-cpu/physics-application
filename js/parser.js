@@ -18,7 +18,7 @@ function lex(src) {
     if (/[A-Za-z]/.test(c)) {
       const f = Object.keys(FUNCS).sort((a, b) => b.length - a.length).find(w => rest.toLowerCase().startsWith(w));
       if (f) { t.push({ k: 'fn', v: f }); i += f.length; continue; }
-      if ((m = rest.match(/^(theta\d*|gamma|delta[A-Za-z]\d*|pi|[A-Za-z]\d*)/))) { t.push({ k: 'id', v: m[0] }); i += m[0].length; continue; }
+      if ((m = rest.match(/^(theta\d*|gamma|delta[A-Za-z]\d*|pi|d[oi](?![A-Za-z_])|[A-Za-z](?:_[A-Za-z0-9]+|\d+)?)/))) { t.push({ k: 'id', v: m[0] }); i += m[0].length; continue; }
     }
     if ('+-*/^(),='.includes(c)) { t.push({ k: 'op', v: c }); i++; continue; }
     throw new Error(`Can't read "${c}"`);

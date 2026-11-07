@@ -13,13 +13,15 @@ const SnellScene = {
     { key: 'theta1', label: 'θ₁ (incoming angle)', min: 0, max: 89, step: 1, value: 40, unit: '°', digits: 0 },
   ],
   params: {},
+  law: { eq: 'n1 sin θ1 = n2 sin θ2', solve: 'theta2', known: ['n1', 'n2', 'theta1'] },
 
   compute() {
     const { n1, n2, theta1 } = this.params;
     const r1 = theta1 * DEG;
-    const s = n1 * Math.sin(r1) / n2;
-    const tir = s > 1;
-    const r2 = tir ? null : Math.asin(s);
+    let r2 = Math.asin(n1 * Math.sin(r1) / n2);
+    if (this.lawFn) r2 = solveLaw(this, { n1, n2, theta1: r1 }, 0, Math.PI / 2, 'lin');
+    const tir = !Number.isFinite(r2); // no bent ray possible: it all reflects
+    if (tir) r2 = null;
     let R = 1; // Fresnel reflectance (unpolarized)
     if (!tir) {
       const ci = Math.cos(r1), ct = Math.cos(r2);

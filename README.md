@@ -51,5 +51,10 @@ Open `index.html` through any static web server (no build step).
 - Math pad types into whichever box is active; on phones the graph stays pinned at the top while typing
 - Installable build lives in the public repo physics-app-install (only the scrambled build) at https://cloudstifa1-cpu.github.io/physics-app-install/
 
+## Phase 8 (done): every topic is a workstation
+- Each animation runs on the equation shown at the top (its "law"); edit it and the animation solves your version live
+- Letters you add get their own sliders; "↺ Real law" restores the true physics; Show with a different equation looks it up instead
+- Subscript letters (rₛ) are understood everywhere
+
 ## Next phases
 - More equations, then phone layout

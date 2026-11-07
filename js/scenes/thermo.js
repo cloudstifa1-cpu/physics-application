@@ -57,7 +57,13 @@ const GasScene = {
   ],
   params: {},
   gas: makeGas(),
-  P() { const { n, T, V } = this.params; return n * R_GAS * T / V; }, // kPa when V is in liters
+  law: { eq: 'PV = nRT', solve: 'P', known: ['V', 'n', 'R', 'T'] },
+  P() { // kPa when V is in liters
+    const { n, T, V } = this.params;
+    if (!this.lawFn) return n * R_GAS * T / V;
+    const P = solveLaw(this, { n, T, V, R: R_GAS }, -1e7, 1e7);
+    return Number.isFinite(P) ? P : 0;
+  },
 
   readouts() {
     const { n, T } = this.params, P = this.P();
@@ -124,8 +130,9 @@ const FirstLawScene = {
   ],
   params: {},
   gas: makeGas(),
+  law: { eq: 'ΔU = Q − W', solve: 'deltaU', known: ['Q', 'W'] },
   state() {
-    const { Q, W } = this.params, dU = Q - W;
+    const { Q, W } = this.params, dU = this.lawFn ? solveLaw(this, { Q, W }, -1e6, 1e6) || 0 : Q - W;
     const dT = dU / (1.5 * R_GAS);             // monatomic: U = 3/2 nRT, n = 1
     const V0 = R_GAS * 300 / 101.325;           // ≈ 24.6 L
     return { dU, dT, T0: 300, T1: 300 + dT, V0, V1: V0 + W / 101.325 };
@@ -204,9 +211,10 @@ const HeatScene = {
     { key: 'Q', label: 'Heat added Q', min: 1, max: 200, step: 1, value: 50, unit: ' kJ', digits: 0 },
   ],
   params: {},
+  law: { eq: 'Q = mcΔT', solve: 'deltaT', known: ['Q', 'm', 'c'] },
   calc() {
     const { mat, m, Q } = this.params, [name, c] = HEAT_MATERIALS[mat];
-    const dT = Q * 1000 / (m * c);
+    const dT = this.lawFn ? solveLaw(this, { Q: Q * 1000, m, c }, -1e7, 1e7) || 0 : Q * 1000 / (m * c);
     return { name, c, dT, T1: 20 + dT };
   },
 

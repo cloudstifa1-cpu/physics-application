@@ -18,13 +18,17 @@ function OpticsScene(kind) {
       { key: 'ho', label: 'Object height hₒ', min: 2, max: 12, step: 1, value: 6, unit: ' cm', digits: 0 },
     ],
     params: {},
+    law: isLens ? { eq: '1/f = 1/do + 1/di', solve: 'di', known: ['f', 'do'] } : { eq: 'f = R / 2', solve: 'f', known: ['R'] },
 
     optics() {
       const p = this.params;
-      let f = isLens ? p.f : p.R / 2;
+      let f = isLens ? p.f : (this.lawFn ? solveLaw(this, { R: p.R }, -1e5, 1e5) : p.R / 2);
+      if (!Number.isFinite(f)) f = 1e9; // your equation has no answer: treat the mirror as flat
       if (Math.abs(f) < 1) f = f < 0 ? -1 : 1; // f = 0 has no meaning
-      const d = p.do, h = p.ho, atF = d === f;
-      const di = atF ? Infinity : 1 / (1 / f - 1 / d);
+      const d = p.do, h = p.ho;
+      let di = d === f ? Infinity : 1 / (1 / f - 1 / d);
+      if (isLens && this.lawFn) { di = solveLaw(this, { f, do: d }, -1e5, 1e5); if (!Number.isFinite(di)) di = Infinity; }
+      const atF = !Number.isFinite(di);
       const m = atF ? Infinity : -di / d;
       return { f, d, h, di, m, hi: m * h, atF };
     },

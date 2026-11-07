@@ -20,8 +20,10 @@ const LIBRARY = [
 ];
 
 // Turn typed math into plain ASCII the matcher and parser understand.
+const SUB_LETTERS = { 'ₐ': 'a', 'ₑ': 'e', 'ₒ': 'o', 'ₓ': 'x', 'ₕ': 'h', 'ₖ': 'k', 'ₗ': 'l', 'ₘ': 'm', 'ₙ': 'n', 'ₚ': 'p', 'ₛ': 's', 'ₜ': 't' };
 function normalize(s) {
   return s
+    .replace(/[ₐₑₒₓₕₖₗₘₙₚₛₜ]+/g, m => '_' + [...m].map(ch => SUB_LETTERS[ch]).join('')) // rₛ -> r_s
     .replace(/[₀-₉]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x2080 + 48))
     .replace(/[θϑ]/g, 'theta').replace(/γ/g, 'gamma').replace(/['′]/g, '').replace(/Δ/g, 'delta').replace(/π/g, 'pi')
     .replace(/[×·]/g, '*').replace(/[−–]/g, '-').replace(/÷/g, '/')
@@ -46,7 +48,7 @@ function symbols(input) {
     if (f) { out.push(f.replace(/^a(sin|cos|tan)$/, 'arc$1')); i += f.length; continue; }
     const w = NAME_WORDS.find(w => low.startsWith(w) && !/[A-Za-z]/.test(rest[w.length] || ''));
     if (w) { out.push(w); i += w.length; continue; }
-    m = rest.match(/^[A-Za-z]\d*/);
+    m = rest.match(/^[A-Za-z](?:_[A-Za-z0-9]+|\d*)/);
     out.push(m[0]); i += m[0].length;
   }
   return out;

@@ -8,6 +8,12 @@ const GravityScene = {
     { key: 'x', label: 'Orbit distance r', min: 1.5, max: 20, step: 0.1, value: 6, unit: ' × rₛ', digits: 1 },
   ],
   params: {},
+  law: { eq: 'Δt₀ = Δt √(1 − rₛ/r)', solve: 'deltat0', known: ['deltat', 'r_s', 'r'] },
+  rate(u) { // clock rate at distance u (in rₛ): orbit clock ticks per far-away tick
+    if (!this.lawFn) return Math.sqrt(1 - 1 / u);
+    const k = solveLaw(this, { deltat: 1, r_s: 1, r: u }, -10, 10, 'lin');
+    return Number.isFinite(k) ? k : 0;
+  },
 
   orbit(t) { // current distance; inside 3 rₛ there is no stable orbit, so it spirals in
     const { x } = this.params;
@@ -19,7 +25,7 @@ const GravityScene = {
     return [
       ['Schwarzschild radius rₛ = 2GM/c²', fmt(rs) + ' km'],
       ['Orbit distance', fmt(rs * x) + ' km'],
-      ['Clock rate in orbit √(1 − rₛ/r)', (Math.sqrt(1 - 1 / x) * 100).toFixed(1) + '% of a far-away clock'],
+      ['Clock rate in orbit √(1 − rₛ/r)', (this.rate(x) * 100).toFixed(1) + '% of a far-away clock'],
       ['Escape speed', Math.sqrt(1 / x).toFixed(3) + ' c'],
       ['Orbit', x < 3 ? '<span class="warn">Too close: no stable orbit inside 3 rₛ, it spirals in</span>' : 'Stable'],
     ];
@@ -70,7 +76,7 @@ const GravityScene = {
 
     // labels and clocks
     label(ctx, `Far-away clock: ${Math.floor(t)} ticks`, 16, 22, '#ffffff', 'left');
-    label(ctx, `Clock in orbit: ${Math.floor(t * Math.sqrt(1 - 1 / u0))} ticks`, 16, 46, '#ffd54a', 'left');
+    label(ctx, `Clock in orbit: ${Math.floor(t * this.rate(u0))} ticks`, 16, 46, '#ffd54a', 'left');
     const [hx, hy] = P(1, Math.PI / 2);
     label(ctx, 'event horizon', hx, hy + 18, '#ff8cf0');
     const [sx, sy] = P(3, Math.PI * 0.85);

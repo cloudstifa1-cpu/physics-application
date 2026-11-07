@@ -24,6 +24,8 @@ function fit(canvas) {
 function loadScene(s) {
   scene = s;
   time = 0; scene._t = undefined; // restart animations from the beginning
+  scene.lawFn = null; scene.extras = []; // back to the real law
+  if (scene.baseSliders) scene.sliders = scene.baseSliders; else scene.baseSliders = scene.sliders;
   if (!scene.mount) { // the workbench keeps its own letters and values
     scene.params = {};
     scene.sliders.forEach(d => scene.params[d.key] = d.value);
@@ -99,7 +101,7 @@ function run() {
 function useForm(form) { eqInput.value = form; run(); }
 
 statusEl.addEventListener('click', e => { const b = e.target.closest('[data-form]'); if (b) useForm(b.dataset.form); });
-$('eqForm').addEventListener('submit', e => { e.preventDefault(); hidePad(); run(); });
+$('eqForm').addEventListener('submit', e => { e.preventDefault(); hidePad(); if (!applyLaw(eqInput.value, true)) run(); });
 
 // ---------- home screen + topic navigation ----------
 const homeEl = $('home'), stageEl = $('stage'), aspectsNav = $('aspects');
@@ -142,11 +144,53 @@ aspectsNav.addEventListener('change', e => {
 function enterScene(sceneId) { const [t, a] = findAspect(sceneId); enterStage(t, a); loadScene(SCENES[sceneId]); }
 
 function openAspect(topic, aspect) {
-  eqInput.value = aspect.eq;
   enterStage(topic, aspect);
   loadScene(SCENES[aspect.scene]);
-  statusEl.innerHTML = `<span class="ok">${topic.name}</span> · ${aspect.name}`;
+  eqInput.value = scene.law ? scene.law.eq : aspect.eq;
+  statusEl.innerHTML = `<span class="ok">${topic.name}</span> · ${aspect.name}`
+    + (scene.law ? ' · <b>Edit the equation at the top to change the physics</b>' : '');
 }
+
+// ---------- editing the law at the top ----------
+// Returns true when the text was handled here (stay on this animation).
+function applyLaw(text, fromShow) {
+  const law = scene && scene.law;
+  if (!law || stageEl.hidden) return false;
+  const squash = s => normalize(s).replace(/\s+/g, '');
+  if (squash(text) === squash(law.eq)) {
+    if (scene.lawFn) { scene.lawFn = null; setExtras([]); }
+    statusEl.innerHTML = `<span class="ok">Real physics</span> · ${escapeHtml(scene.title)} · <b>Edit the equation at the top to change it</b>`;
+    updateReadouts();
+    return true;
+  }
+  try {
+    const c = compileLaw(text, law);
+    scene.lawFn = c.F;
+    setExtras(c.extras);
+    statusEl.innerHTML = '<span class="warn">Your version</span> · The animation follows your equation. '
+      + '<button type="button" class="chip" data-restore>↺ Real law</button>';
+    updateReadouts();
+    return true;
+  } catch (err) {
+    if (fromShow) return false; // not about this animation: look it up instead
+    statusEl.innerHTML = `<span class="warn">Not used yet:</span> ${escapeHtml(err.message)}. `
+      + '<button type="button" class="chip" data-restore>↺ Real law</button>';
+    return true;
+  }
+}
+// New letters you add to an equation get their own sliders.
+function setExtras(list) {
+  if (list.join(',') === (scene.extras || []).join(',')) return;
+  scene.extras = list;
+  list.forEach(v => { if (scene.params[v] === undefined) scene.params[v] = 1; });
+  scene.sliders = scene.baseSliders.concat(list.map(v =>
+    ({ key: v, label: `${prettyName(v)} (your new letter)`, min: -10, max: 10, step: 0.1, value: 1, digits: 1 })));
+  buildSliders();
+}
+eqInput.addEventListener('input', () => applyLaw(eqInput.value, false));
+statusEl.addEventListener('click', e => {
+  if (e.target.closest('[data-restore]') && scene && scene.law) { eqInput.value = scene.law.eq; applyLaw(scene.law.eq, false); }
+});
 
 aspectsNav.addEventListener('click', e => {
   const b = e.target.closest('button');
@@ -198,7 +242,7 @@ buildKeypad(keypad, eqInput, hidePad);
 
 // ---------- playback ----------
 $('playBtn').addEventListener('click', () => { playing = !playing; $('playBtn').textContent = playing ? '⏸ Pause' : '▶ Play'; });
-$('resetBtn').addEventListener('click', () => { time = 0; loadScene(scene); });
+$('resetBtn').addEventListener('click', () => { time = 0; loadScene(scene); if (scene.law) applyLaw(eqInput.value, false); });
 $('graphToggle').addEventListener('click', () => {
   const c = graphStrip.classList.toggle('collapsed');
   $('graphToggle').textContent = (c ? '▸' : '▾') + ' Graph';
