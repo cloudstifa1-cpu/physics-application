@@ -4,7 +4,7 @@ const eqInput = $('eq'), statusEl = $('status'), overlay = $('overlay');
 const sceneCanvas = $('scene'), graphCanvas = $('graph'), graphStrip = $('graphStrip');
 const keypad = $('keypad'), modeBtn = $('modeBtn');
 
-const SCENES = { snell: SnellScene, lens: OpticsScene('lens'), mirror: OpticsScene('mirror'),
+const SCENES = { gravity: GravityScene, snell: SnellScene, lens: OpticsScene('lens'), mirror: OpticsScene('mirror'),
   gas: GasScene, firstlaw: FirstLawScene, heat: HeatScene,
   spacetime: SpacetimeScene, energy: EnergyScene, veladd: VelAddScene };
 let scene = null, playing = true, time = 0, lastFrame = performance.now();
@@ -69,7 +69,7 @@ function run() {
   const best = ranked.find(r => r.score === 1);
 
   if (best && best.entry.scene) {
-    loadScene(SCENES[best.entry.scene]);
+    enterScene(best.entry.scene);
     statusEl.innerHTML = `<span class="ok">Recognized:</span> ${best.entry.name} · ${best.entry.topic}`;
     return;
   }
@@ -84,6 +84,7 @@ function run() {
   const close = ranked.filter(r => r.score >= 0.5);
   try {
     const plot = buildPlot(text);
+    enterStage(null, null);
     loadScene(makeGraphScene(plot, text));
     statusEl.innerHTML = `<span class="warn">Not in the library yet</span> — graphed as ${escapeHtml(plot.yName)} vs ${escapeHtml(plot.xName)}.`
       + (close.length ? ` Did you mean: ${suggestionChips(close)}` : '');
@@ -98,14 +99,59 @@ function useForm(form) { eqInput.value = form; run(); }
 statusEl.addEventListener('click', e => { const b = e.target.closest('[data-form]'); if (b) useForm(b.dataset.form); });
 $('eqForm').addEventListener('submit', e => { e.preventDefault(); hidePad(); run(); });
 
-// library list in the side panel
-LIBRARY.forEach(entry => {
+// ---------- home screen + topic navigation ----------
+const homeEl = $('home'), stageEl = $('stage'), aspectsNav = $('aspects');
+let currentTopic = null;
+
+function showHome() {
+  scene = null; currentTopic = null;
+  homeEl.hidden = false; stageEl.hidden = true; graphStrip.hidden = true; aspectsNav.hidden = true;
+  overlay.hidden = true; hidePad();
+  statusEl.innerHTML = 'Pick a topic below, or type an equation above.';
+  window.scrollTo(0, 0);
+}
+
+// Show the animation area, with the topic's aspect buttons if it belongs to a topic.
+function enterStage(topic, aspect) {
+  currentTopic = topic;
+  homeEl.hidden = true; stageEl.hidden = false;
+  aspectsNav.hidden = false;
+  aspectsNav.innerHTML = '<button type="button" data-home>← Topics</button>'
+    + (topic ? `<span class="tname">${topic.name}</span>` + byName(topic.aspects).map(a =>
+      `<button type="button" data-aspect="${escapeHtml(a.name)}" class="${a === aspect ? 'on' : ''}">${a.name}</button>`).join('')
+      // phones get one drop-down menu instead of a pile of buttons
+      + `<select class="aspect-select" aria-label="Choose what to show">${byName(topic.aspects).map(a =>
+        `<option value="${escapeHtml(a.name)}"${a === aspect ? ' selected' : ''}>${a.name}</option>`).join('')}</select>` : '');
+}
+aspectsNav.addEventListener('change', e => {
+  const a = currentTopic && currentTopic.aspects.find(x => x.name === e.target.value);
+  if (a) openAspect(currentTopic, a);
+});
+function enterScene(sceneId) { const [t, a] = findAspect(sceneId); enterStage(t, a); loadScene(SCENES[sceneId]); }
+
+function openAspect(topic, aspect) {
+  eqInput.value = aspect.eq;
+  enterStage(topic, aspect);
+  loadScene(SCENES[aspect.scene]);
+  statusEl.innerHTML = `<span class="ok">${topic.name}</span> · ${aspect.name}`;
+}
+
+aspectsNav.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if ('home' in b.dataset) return showHome();
+  const a = currentTopic && currentTopic.aspects.find(x => x.name === b.dataset.aspect);
+  if (a) openAspect(currentTopic, a);
+});
+document.querySelector('.brand').addEventListener('click', showHome);
+
+byName(TOPICS).forEach(t => {
   const b = document.createElement('button');
-  b.type = 'button';
-  b.innerHTML = `<span>${entry.name}<br><span style="font-family:Georgia,serif">${entry.form}</span></span>`
-    + (entry.scene ? '<span class="live">Animated</span>' : '<span class="soon">Coming soon</span>');
-  b.addEventListener('click', () => useForm(entry.form));
-  $('library').appendChild(b);
+  b.type = 'button'; b.className = 'topic';
+  b.innerHTML = `<b>${t.name}</b><span>${t.blurb}</span>`
+    + (t.aspects.length ? `<span class="count">${t.aspects.length} animations →</span>` : '<span class="soon">Coming soon</span>');
+  b.addEventListener('click', () => { if (t.aspects.length) openAspect(t, byName(t.aspects)[0]); });
+  $('topics').appendChild(b);
 });
 
 // ---------- keyboard / math pad toggle ----------
@@ -192,6 +238,7 @@ installBtn.addEventListener('click', async () => {
 });
 
 setMode(mathMode);
-if (!touch) eqInput.blur();
-run();
+hidePad(); eqInput.blur();
+eqInput.value = '';
+showHome();
 requestAnimationFrame(frame);

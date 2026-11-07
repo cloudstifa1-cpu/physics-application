@@ -15,6 +15,8 @@ const LIBRARY = [
   { id: 'lengthc',  name: 'Length contraction',  topic: 'Relativity', form: 'L = L₀ / γ',          need: ['L', 'L0'], scene: 'spacetime' },
   { id: 'emc2',     name: 'Mass–energy',         topic: 'Relativity', form: 'E = mc²',            need: ['E', 'm', 'c'], scene: 'energy' },
   { id: 'veladd',   name: 'Velocity addition',   topic: 'Relativity', form: 'w = (u + v) / (1 + uv/c²)', need: ['u', 'v', 'c'], scene: 'veladd' },
+  { id: 'schwarz',  name: 'Schwarzschild radius', topic: 'Relativity', form: 'rₛ = 2GM/c²',          need: ['G', 'M', 'c'], scene: 'gravity' },
+  { id: 'gravtime', name: 'Gravitational time dilation', topic: 'Relativity', form: 'Δt₀ = Δt √(1 − 2GM/(rc²))', need: ['G', 'M', 'r', 'c'], scene: 'gravity' },
 ];
 
 // Turn typed math into plain ASCII the matcher and parser understand.

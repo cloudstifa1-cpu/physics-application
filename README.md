@@ -36,5 +36,12 @@ Open `index.html` through any static web server (no build step).
 - Velocity addition: light, true probe, Newton's guess and the ship race from one launch line; Newton's guess can pass light, the real answer never does
 - Math pad gets a relativity row: γ ₀ ² c v u E m L t
 
+## Phase 6 (done): topics + gravity
+- App opens on a home screen: topics in alphabetical order (Optics, Quantum physics — coming soon, Relativity, Thermodynamics)
+- Picking a topic opens its first animation with a bar of its aspects (a drop-down menu on phones) and a ← Topics button
+- Typed equations still work and jump to the right topic
+- New Relativity aspect: gravity as curved spacetime — a black hole sinks a grid, an object orbits on it, orbit clock vs far-away clock, last stable orbit at 3 rₛ, spiral-in when too close; clock rate vs distance graph
+- Not published: Cloudflare is frozen at the first version on purpose; updates live only in this repo
+
 ## Next phases
 - More equations, then phone layout

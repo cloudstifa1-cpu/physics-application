@@ -28,8 +28,15 @@
   <button type="button" id="updateBtn" class="primary">Update now</button>
 </div>
 <div id="status" class="status" role="status"></div>
+<nav id="aspects" class="aspects" hidden></nav>
 
-<main class="stage">
+<main id="home" class="home" hidden>
+  <h1>Choose a topic</h1>
+  <p class="hint">Or type an equation in the box at the top and tap Show.</p>
+  <div id="topics" class="topics"></div>
+</main>
+
+<main id="stage" class="stage">
   <section class="view">
     <canvas id="scene"></canvas>
     <div id="overlay" class="overlay" hidden></div>
@@ -42,8 +49,6 @@
       <button type="button" id="playBtn">⏸ Pause</button>
       <button type="button" id="resetBtn">↺ Reset</button>
     </div>
-    <h3>Equation library</h3>
-    <div id="library" class="library"></div>
   </aside>
 </main>
 
@@ -55,11 +60,13 @@
 <div id="keypad" class="keypad" hidden></div>
 
 <script src="js/equations.js"></script>
+<script src="js/topics.js"></script>
 <script src="js/parser.js"></script>
 <script src="js/scenes/snell.js"></script>
 <script src="js/scenes/optics.js"></script>
 <script src="js/scenes/thermo.js"></script>
 <script src="js/scenes/relativity.js"></script>
+<script src="js/scenes/gravity.js"></script>
 <script src="js/scenes/graph.js"></script>
 <script src="js/keypad.js"></script>
 <script src="js/app.js"></script>
