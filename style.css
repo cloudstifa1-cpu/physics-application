@@ -37,6 +37,8 @@ button.primary { background: var(--accent); color: var(--accent-ink); border-col
 .mode { white-space: nowrap; }
 .mode.on { background: #10324a; border-color: var(--accent); }
 
+.update-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; background: #10324a; border-bottom: 2px solid var(--accent); font-size: 17px; font-weight: 600; }
+.update-bar[hidden] { display: none; }
 .status { padding: 6px 16px; min-height: 36px; font-size: 15px; color: var(--text-2); background: var(--panel); border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .status .ok { color: var(--good); font-weight: 600; }
 .status .warn { color: var(--warn); font-weight: 600; }

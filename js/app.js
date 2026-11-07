@@ -152,7 +152,21 @@ function frame(now) {
 
 // ---------- install + offline ----------
 // The offline cache (sw.js) only exists in the release build (dist/).
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+// Checks for a new version on open and whenever the app comes back to the
+// screen; when one arrives, a bar offers a one-tap update (no refresh button needed).
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    const check = () => reg.update().catch(() => {});
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+    setInterval(check, 30 * 60 * 1000);
+  }).catch(() => {});
+  let hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) { hadController = true; return; } // first install, not an update
+    $('updateBar').hidden = false;
+  });
+  $('updateBtn').addEventListener('click', () => location.reload());
+}
 
 const installBtn = $('installBtn');
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
